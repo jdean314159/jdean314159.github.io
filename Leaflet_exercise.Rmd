@@ -1,0 +1,30 @@
+---
+title: "Leaflet_exercise"
+author: "Jeff Dean, PhD"
+date: "7/26/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## My leaflet Page
+
+As requested for this exercise, this shows a map with today's date (`r date()`).
+
+```{r map, echo=FALSE, message=FALSE}
+library(dplyr)
+library(leaflet)
+
+npsIcon <- makeIcon(
+  iconUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Naval_Postgraduate_School_emblem.svg/1200px-Naval_Postgraduate_School_emblem.svg.png",
+  iconWidth = 110, iconHeight = 95,
+  iconAnchorX = 22, iconAnchorY = 94
+)
+
+df <- data.frame(lat=36.597889, lng =-121.873312)
+df %>% leaflet() %>% addTiles() %>% addMarkers(icon=npsIcon)
+
+
+```
