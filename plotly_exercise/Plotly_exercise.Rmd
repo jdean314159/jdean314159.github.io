@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Plotly Post
-```{r COVID_data, cache=TRUE, echo=FALSE, message=FALSE,warning=FALSE}
+```{r COVID_data, cache=FALSE, echo=FALSE, message=FALSE,warning=FALSE,}
 library(rjson)
 library(dplyr)
 
@@ -18,6 +18,7 @@ data_url <- 'https://covid19-lake.s3.us-east-2.amazonaws.com/enigma-jhu/csv/Enig
 temp <- tempfile()
 download.file(data_url, temp)
 data <- read.csv(temp,colClasses = c("fips"="character"))  
+
 data$country_region <- as.character(data$country_region)  # make region a character vector
 us_data <- data[data$country_region=="US",]       # Downselect data to US
 us_data <- us_data[us_data$fips!="",]             # drop rows where the fips value is missing
@@ -25,6 +26,7 @@ grouped <- us_data %>% group_by(combined_key)     # Group records by location na
 deaths <- grouped %>% filter(deaths==max(deaths)) # Take the cumulative death value/city
 by_county <- deaths %>% group_by(fips)            # Group records by county
 sum_deaths <- by_county %>% summarise(tot_deaths = sum(deaths)) # get total deaths per county
+temp <- ""; data <- ""; us_data <- ""; grouped <- ""; by_county <- ""; deaths <- ""
 ```
 
 ```{r do_plot, echo=FALSE, message=FALSE,warning=FALSE}
