@@ -1,56 +1,72 @@
----
-title: "Plotly assignment"
-author: "Jeff Dean, PhD"
-date: "9/2/2020"
-output: ioslides_presentation
----
+--- 
+title       : "Days 'til Christmas"
+subtitle    : "Yes, we need a little Christmas, right this very moment..."
+author      : "Jeff Dean"
+job         : 
+framework   : revealjs        # {io2012, html5slides, shower, dzslides, ...}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : default      # 
+widgets     : []            # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+knit        : slidify::knit2slides
+--- 
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+## How Many Days Until Christmas?
+
+#### The year of 2020 has been a _little_ hard on most of us.
+
+#### As we get closer to the end of the year, we **need** to be reminded that better days are coming.
+
+#### Are you ready for _Christmas_?
+
+
+---  .class #id0 bg:red
+
+## Let Me Count the Days
+
+#### With our tool, we can automatically determine the number of days from a given date to the next Christmas
+
+#### This can be used to figure out how much time you have to get presents
+
+###### This is especially important because Amazon has a backlog on a number of products!
+
+--- .class #id1 bg:green
+
+## The Magic Behind The Algorithm
+
+#### No magic involved (although this is about Christmas)
+
+#### All you have to do is enter a date, say, today's date!
+
+###### R code
+``` {r, get_lubridate, echo=FALSE}
+library(lubridate)
 ```
 
-## Plotly Post
-```{r COVID_data, cache=FALSE, echo=FALSE, message=FALSE,warning=FALSE,}
-library(rjson)
-library(dplyr)
-
-data_url <- 'https://covid19-lake.s3.us-east-2.amazonaws.com/enigma-jhu/csv/Enigma-JHU.csv.gz'
-temp <- tempfile()
-download.file(data_url, temp)
-data <- read.csv(temp,colClasses = c("fips"="character"))  
-
-data$country_region <- as.character(data$country_region)  # make region a character vector
-us_data <- data[data$country_region=="US",]       # Downselect data to US
-us_data <- us_data[us_data$fips!="",]             # drop rows where the fips value is missing
-grouped <- us_data %>% group_by(combined_key)     # Group records by location name
-deaths <- grouped %>% filter(deaths==max(deaths)) # Take the cumulative death value/city
-by_county <- deaths %>% group_by(fips)            # Group records by county
-sum_deaths <- by_county %>% summarise(tot_deaths = sum(deaths)) # get total deaths per county
-temp <- ""; data <- ""; us_data <- ""; grouped <- ""; by_county <- ""; deaths <- ""
+``` {r, get_date}
+thisDate <- today()
+Year <- year(thisDate)
 ```
+##### Today is `r thisDate` 
 
-```{r do_plot, echo=FALSE, message=FALSE,warning=FALSE}
-library(plotly)
-library(rjson)
+#### Then we figure out the year, and add it to a year-month-day string for Christmas
 
-url <- 'https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json'
-counties <- rjson::fromJSON(file=url)
-g <- list(scope='usa', projection=list(type='albers usa', showlakes=TRUE,
-        lakecolor = plotly::toRGB('white')))
-fig <- plotly::plot_ly(colorscale="Log")
-fig <- fig %>% plotly::add_trace(
-    type="choropleth",
-    geojson=counties,
-    locations=sum_deaths$fips,
-    z=sum_deaths$tot_deaths+1, 
-    zmin=0,
-    zmax=200,
-    text=deaths, 
-    color="Viridis"
-  )
-fig <- fig %>% layout(title="Total US COVID-19 Deaths by County, March 2020")
-fig <- fig %>% layout(geo = g)
-fig
-```
+##### i.e. `r Year`-12-25.
+#### We subtract the date entered from Christmas day for that year, and voila!
 
+--- .class #id2 bg:green
+
+## Why?
+
+#### As we said, 2020 has been a rough year.
+
+##### Politics, COVID-19, wildfires, the economy, ...
+
+#### We just thought you needed a reminder of the coming holiday season
+
+---- .class #id3
+
+## Don't forget the holiday wine!
+
+![wreath](./assets/img/center.jpg)
 
